@@ -30,7 +30,7 @@ export class Users {
   @Matches(/^(\W[0-9][A-Z])|(.[0-9][A-Z]).*\W.*$/, {
     message: 'password should include one special character, the second character must be a number and the third an uppercased letter',
   })
-  @MinLength(7)
+  @MinLength(7, {message: 'The password need seven characters'})
   @IsNotEmpty({message:'This field is required',})
   password: string;
 
