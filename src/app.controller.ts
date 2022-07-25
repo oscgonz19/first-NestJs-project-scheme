@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Users } from './users/users.entity';
+import { User } from './users/users.entity';
 
+import { AuthService } from './auth/auth.service';
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
@@ -9,15 +10,6 @@ export class AppController {
   @Get()
   getHello(): string {
     return this.appService.getHello();
-  }
-  // @Get()
-  // newEndpoint(): string {
-  //   return this.appService.getHello();
-
-  // }
-  @Post()
-  create(@Body() users: Users) {
-    console.log(users);
   }
   
 }

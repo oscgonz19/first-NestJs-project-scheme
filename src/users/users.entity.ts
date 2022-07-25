@@ -1,12 +1,12 @@
 import { IsNotEmpty, IsEmail, IsNumberString, Matches, MinLength} from 'class-validator';
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, BeforeInsert } from 'typeorm';
 import { isIdCountryAlreadyExistValidator } from './validators/isIdCountryAlreadyExist';
 import { IsEmailAlreadyExist } from './validators/isEmailAlreadyExist';
 import { isPhoneNumberAlreadyExistValidator } from './validators/isPhoneNumberAlreadyExist';
-
+import * as bcrypt from 'bcrypt';
 
 @Entity({ name: 'users' })
-export class Users {
+export class User {
   @PrimaryColumn()
   id: number;
 
@@ -26,7 +26,7 @@ export class Users {
   })
   email: string;
 
-  @Column('int')
+  @Column({select: false, nullable: true, insert: false, update: false})
   @Matches(/^(\W[0-9][A-Z])|(.[0-9][A-Z]).*\W.*$/, {
     message: 'password should include one special character, the second character must be a number and the third an uppercased letter',
   })
@@ -36,10 +36,13 @@ export class Users {
 
   @Column()
   @IsNotEmpty({message:'This field is required',})
-  @isPhoneNumberAlreadyExistValidator({message:'This Phone numbervis already used by other users. Choose another Phone number',
-})
+  @isPhoneNumberAlreadyExistValidator({message:'This Phone number is already used by other users. Choose another Phone number',
+  })
   phone_number: string;
-
+  
+  @Column('text')
+  encryption_password: string
+ 
   @Column()
   created_date: Date;
 
@@ -51,4 +54,16 @@ export class Users {
   @IsNumberString()
   @isIdCountryAlreadyExistValidator({message:'this id_country is repeat'})
   id_country: string;
+  
+  @Column('text')
+  status: string;
+  
+  
+  @BeforeInsert()
+    async setEncryptedPassword(){
+      const saltOrRounds= 10;
+      const hash = await bcrypt.hash(this.password, saltOrRounds);
+      this.encryption_password = hash
+    }
 }
+

@@ -1,6 +1,6 @@
 import {Injectable, Inject} from '@nestjs/common';
 import {Repository} from 'typeorm';
-import { Users } from '../users.entity';
+import { User } from '../users.entity';
 import { registerDecorator, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface, } from 'class-validator';
 
 
@@ -9,7 +9,7 @@ import { registerDecorator, ValidationOptions, ValidatorConstraint, ValidatorCon
 export class isPhoneNumberAlreadyExist implements ValidatorConstraintInterface {
     constructor(
         @Inject('USERS_REPOSITORY')
-            protected readonly usersRepository: Repository<Users>
+            protected readonly usersRepository: Repository<User>
     ){}
     async validate(phone_number: string) {
         const user = await this.usersRepository.findOne({
@@ -17,7 +17,7 @@ export class isPhoneNumberAlreadyExist implements ValidatorConstraintInterface {
                 phone_number,
             },
         });
-          return user == null ? true : false;
+        return user == null ? true : false;
     }
 }
 export function isPhoneNumberAlreadyExistValidator (validationOptions?: ValidationOptions) {
